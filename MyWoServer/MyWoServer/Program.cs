@@ -4,11 +4,13 @@ using MyWoServer.Data;
 using MyWoServer.Data.Seeders;
 using MyWoServer.Models;
 using MyWoServer.Services.AreaServices;
+using MyWoServer.Services.ProjectServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddScoped<IAreaService, AreaService>();
+builder.Services.AddScoped<IProjectService, ProjectService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
