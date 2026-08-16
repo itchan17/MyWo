@@ -15,8 +15,12 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
 // Configure database
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddSingleton<SoftDeleteInterceptor>();
+
+builder.Services.AddDbContext<AppDbContext>((sp, options) => {
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
+    options.AddInterceptors(sp.GetRequiredService<SoftDeleteInterceptor>());
+});
 
 builder.Services
     .AddIdentity<User, IdentityRole>()

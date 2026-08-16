@@ -9,5 +9,5 @@ public interface IAreaService
     Task<AreaDto> GetById(Guid id);
     Task<AreaDto> Create(CreateAreaDto area);
     Task<AreaDto> Update(Guid id, CreateAreaDto area);
-
+    Task Delete(Guid id);
 }

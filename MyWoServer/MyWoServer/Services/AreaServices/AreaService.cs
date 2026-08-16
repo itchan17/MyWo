@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MyWoServer.Data;
 using MyWoServer.Dtos.AreaDtos;
+using MyWoServer.Mappers;
 using MyWoServer.Models;
 
 namespace MyWoServer.Services.AreaServices;
@@ -17,16 +18,7 @@ public class AreaService : IAreaService
     public async Task<IEnumerable<AreaDto>> GetAll()
     {
         return await _appDbContext.Areas
-            .Select(area => new AreaDto
-            {
-                Id = area.Id,
-                Name = area.Name,
-                Description = area.Description,
-                Icon = area.Icon,
-                Color = area.Color,
-                CreatedAt = area.CreatedAt,
-                UpdatedAt = area.UpdatedAt
-            })
+            .Select(area => area.ToAreaDto())
             .ToListAsync();
     }
 
@@ -37,44 +29,17 @@ public class AreaService : IAreaService
         if(area is null)
             throw new KeyNotFoundException("Area was not found");
 
-        return new AreaDto
-        {
-            Id = area.Id,
-            Name = area.Name,
-            Description = area.Description,
-            Icon = area.Icon,
-            Color = area.Color,
-            CreatedAt = area.CreatedAt,
-            UpdatedAt = area.UpdatedAt
-        };
+        return area.ToAreaDto();
     }
 
     public async Task<AreaDto> Create(CreateAreaDto areaDto)
     {
-        var area = new Area
-        {
-            Name = areaDto.Name,
-            Description = areaDto.Description,
-            Icon = areaDto.Icon,
-            Color = areaDto.Color,
-            CreatedBy = _appDbContext.Users.FirstOrDefault().Id,
-            CreatedAt = DateTime.UtcNow,
-            UpdatedAt = DateTime.UtcNow
-        };
+        var area = areaDto.ToEntity(_appDbContext);
 
         _appDbContext.Areas.Add(area);
         _appDbContext.SaveChanges();
 
-        return new AreaDto
-        {
-            Id = area.Id,
-            Name = area.Name,
-            Description = area.Description,
-            Icon = area.Icon,
-            Color = area.Color,
-            CreatedAt = area.CreatedAt,
-            UpdatedAt = area.UpdatedAt
-        };
+        return area.ToAreaDto();
 
     }
 
@@ -93,15 +58,18 @@ public class AreaService : IAreaService
 
         await _appDbContext.SaveChangesAsync();
 
-        return new AreaDto
-        {
-            Id = area.Id,
-            Name = area.Name,
-            Description = area.Description,
-            Icon = area.Icon,
-            Color = area.Color,
-            CreatedAt = area.CreatedAt,
-            UpdatedAt = area.UpdatedAt
-        };
+        return area.ToAreaDto();
+    }
+
+    public async Task Delete(Guid id)
+    {
+        var area = _appDbContext.Areas.FirstOrDefault(x => x.Id == id);
+
+        if(area is null)
+            throw new KeyNotFoundException("Area was not found");
+
+         _appDbContext.Areas.Remove(area);
+
+        await _appDbContext.SaveChangesAsync();
     }
 }
