@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MyWoServer.Dtos.AreaDtos;
 using MyWoServer.Services.AreaServices;
+using MyWoServer.Shared;
 
 namespace MyWoServer.Controllers;
 
@@ -19,7 +20,7 @@ public class AreaController : ControllerBase
     {
         var result = await _areaService.GetAll();
 
-        return Ok(result);
+        return Ok(new ApiResponse<IEnumerable<AreaDto>>(true, "Areas retrieved successfully", result));
     }
 
     [HttpGet("{id}")]
@@ -28,36 +29,37 @@ public class AreaController : ControllerBase
         try
         {
             var area = await _areaService.GetById(id);
-            return Ok(area);
+
+            return Ok(new ApiResponse<AreaDto>(true, "Area retrieved successfully", area));
         }
         catch (KeyNotFoundException ex)
         { 
-            return NotFound(ex.Message);
+            return NotFound(new ApiResponse<object>(false, ex.Message, null));
         }
     }
 
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<AreaDto>> Create([FromBody]CreateAreaDto area)
+    public async Task<ActionResult<AreaDto>> Create([FromBody]CreateAreaDto areaDto)
     {
-        var result = await _areaService.Create(area);
+        var area = await _areaService.Create(areaDto);
 
-        return Ok(result);
+        return Ok(new ApiResponse<AreaDto>(true, "Area created successfully", area));
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult<AreaDto>> Update(Guid id, [FromBody] CreateAreaDto area)
+    public async Task<ActionResult<AreaDto>> Update(Guid id, [FromBody] CreateAreaDto areaDto)
     {
         try
         {
-            var result = await _areaService.Update(id, area);
+            var updatedArea = await _areaService.Update(id, areaDto);
 
-            return Ok(result);
+            return Ok(new ApiResponse<AreaDto>(true, "Area updated successfully", updatedArea));
         }
         catch (KeyNotFoundException ex)
         {
-            return NotFound(ex.Message);
+            return NotFound(new ApiResponse<object>(false, ex.Message, null));
         }
     }
 
@@ -71,7 +73,7 @@ public class AreaController : ControllerBase
         }
         catch (KeyNotFoundException ex)
         {
-            return NotFound(ex.Message);
+            return NotFound(new ApiResponse<object>(false, ex.Message, null));
         }
     }
 }
