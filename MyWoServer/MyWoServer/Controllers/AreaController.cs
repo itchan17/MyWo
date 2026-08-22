@@ -6,7 +6,7 @@ using MyWoServer.Shared;
 namespace MyWoServer.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/areas")]
 public class AreaController : ControllerBase
 {
     private readonly IAreaService _areaService;

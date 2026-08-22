@@ -13,9 +13,6 @@ public class AppDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     { 
-        modelBuilder.Entity<Area>()
-            .HasQueryFilter("SoftDelete", a => a.DeletedAt == null);
-        modelBuilder.Entity<Project>()
-           .HasQueryFilter("SoftDelete", a => a.DeletedAt == null);
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
     }
 }

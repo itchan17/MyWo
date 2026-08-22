@@ -8,7 +8,7 @@ using MyWoServer.Shared;
 namespace MyWoServer.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/projects")]
     public class ProjectController : ControllerBase
     {
         private readonly IProjectService _projectService;

@@ -9,9 +9,8 @@ public class Area : BaseModel, ISoftDeletable
     public string? Description { get; set; }
     public string? Icon { get; set; }
     public string? Color { get; set; }
-
+    public ICollection<Project> Projects { get; set; } = new List<Project>();
     public string CreatedBy { get; set; } = string.Empty;
-    [ForeignKey(nameof(CreatedBy))]
     public User CreatedByUser { get; set; } = null!;
     public DateTime? DeletedAt { get; set; }
 }
