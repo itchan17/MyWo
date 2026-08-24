@@ -15,35 +15,43 @@ public class AreaService : IAreaService
         _appDbContext = appDbContext;
     }
 
-    public async Task<IEnumerable<AreaDto>> GetAll()
+    public async Task<IEnumerable<AreaResponseDto>> GetAll(bool includeProjects = false)
     {
-        return await _appDbContext.Areas
-            .Select(area => area.ToAreaDto())
+        var query = _appDbContext.Areas
+               .AsQueryable();
+
+        if (includeProjects)
+        {
+            query = query.Include(area => area.Projects);
+        }
+      
+        return await query
+            .Select(area => area.ToAreaResponseDto(includeProjects))
             .ToListAsync();
     }
 
-    public async Task<AreaDto> GetById(Guid id)
+    public async Task<AreaResponseDto> GetById(Guid id)
     {
         var area = await _appDbContext.Areas.FirstOrDefaultAsync(x => x.Id == id);
 
         if(area is null)
             throw new KeyNotFoundException("Area was not found");
 
-        return area.ToAreaDto();
+        return area.ToAreaResponseDto();
     }
 
-    public async Task<AreaDto> Create(CreateAreaDto areaDto)
+    public async Task<AreaResponseDto> Create(CreateAreaDto areaDto)
     {
         var area = areaDto.ToEntity(_appDbContext);
 
         _appDbContext.Areas.Add(area);
         _appDbContext.SaveChanges();
 
-        return area.ToAreaDto();
+        return area.ToAreaResponseDto();
 
     }
 
-    public async Task<AreaDto> Update(Guid id, CreateAreaDto areaDto)
+    public async Task<AreaResponseDto> Update(Guid id, CreateAreaDto areaDto)
     {
         var area = await _appDbContext.Areas.FirstOrDefaultAsync(x => x.Id == id);
 
@@ -58,7 +66,7 @@ public class AreaService : IAreaService
 
         await _appDbContext.SaveChangesAsync();
 
-        return area.ToAreaDto();
+        return area.ToAreaResponseDto();
     }
 
     public async Task Delete(Guid id)

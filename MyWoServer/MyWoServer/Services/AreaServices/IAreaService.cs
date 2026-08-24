@@ -5,9 +5,9 @@ namespace MyWoServer.Services.AreaServices;
 
 public interface IAreaService
 {
-    Task<IEnumerable<AreaDto>> GetAll();
-    Task<AreaDto> GetById(Guid id);
-    Task<AreaDto> Create(CreateAreaDto area);
-    Task<AreaDto> Update(Guid id, CreateAreaDto area);
+    Task<IEnumerable<AreaResponseDto>> GetAll(bool includeProjects);
+    Task<AreaResponseDto> GetById(Guid id);
+    Task<AreaResponseDto> Create(CreateAreaDto area);
+    Task<AreaResponseDto> Update(Guid id, CreateAreaDto area);
     Task Delete(Guid id);
 }

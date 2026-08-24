@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Sidebar,
   SidebarContent,
@@ -23,57 +23,55 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import AreaForm from "@/pages/Area/AreaForm";
+import api from "@/services/api";
 
-const areas = [
-  {
-    id: 1,
-    name: "Development",
-    projects: ["MyWo", "Portfolio", "API Refactor"],
-  },
-  {
-    id: 2,
-    name: "Learning",
-    projects: ["React", "C#", "SQL"],
-  },
-  {
-    id: 3,
-    name: "Personal",
-    projects: [],
-  },
-  {
-    id: 4,
-    name: "Development",
-    projects: ["MyWo", "Portfolio", "API Refactor"],
-  },
-  {
-    id: 5,
-    name: "Learning",
-    projects: ["React", "C#", "SQL"],
-  },
-  {
-    id: 6,
-    name: "Personal",
-    projects: [],
-  },
-  {
-    id: 7,
-    name: "Development",
-    projects: ["MyWo", "Portfolio", "API Refactor"],
-  },
-  {
-    id: 8,
-    name: "Learning",
-    projects: ["React", "C#", "SQL"],
-  },
-  {
-    id: 9,
-    name: "Personal",
-    projects: [],
-  },
-];
+interface Area {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  color: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface areaWithProjects extends Area {
+  projects: Project[];
+}
+
+interface Project {
+  id: string;
+  name: string;
+  description: string;
+  startDate: string;
+  dueDate: string;
+  status: number;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+}
 
 export default function AppSidebar() {
-  const [icon, setIcon] = useState("");
+  const [openForm, setOpenForm] = useState(false);
+  const [areas, setAreas] = useState<areaWithProjects[]>([]);
+
+  useEffect(() => {
+    const getAreas = async () => {
+      try {
+        const response = await api.get("/areas", {
+          params: {
+            includeProjects: true,
+          },
+        });
+        console.log(response);
+        setAreas(response.data.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    getAreas();
+  }, []);
 
   return (
     <Sidebar collapsible="icon">
@@ -103,7 +101,7 @@ export default function AppSidebar() {
           <SidebarMenu>
             {/* Add Area */}
             <SidebarMenuItem>
-              <Dialog>
+              <Dialog open={openForm} onOpenChange={setOpenForm}>
                 <DialogTrigger
                   render={
                     <Button variant="outline" className="rounded-sm w-full">
@@ -116,7 +114,7 @@ export default function AppSidebar() {
                 />
 
                 {/* Create Area Form */}
-                <AreaForm />
+                <AreaForm open={openForm} onOpenChange={setOpenForm} />
               </Dialog>
             </SidebarMenuItem>
 
@@ -144,9 +142,9 @@ export default function AppSidebar() {
                     {area.projects.length > 0 ? (
                       <SidebarMenuSub>
                         {area.projects.map((project) => (
-                          <SidebarMenuSubItem key={project}>
+                          <SidebarMenuSubItem key={project.id}>
                             <SidebarMenuSubButton className={"no-underline!"}>
-                              <span>{project}</span>
+                              <span>{project.name}</span>
                             </SidebarMenuSubButton>
                           </SidebarMenuSubItem>
                         ))}

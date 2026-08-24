@@ -16,21 +16,22 @@ public class AreaController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<AreaDto>>> GetAll()
+    public async Task<ActionResult<IEnumerable<AreaResponseDto>>> GetAll([FromQuery] bool includeProjects = false)
     {
-        var result = await _areaService.GetAll();
+        var result = await _areaService.GetAll(includeProjects);
 
-        return Ok(new ApiResponse<IEnumerable<AreaDto>>(true, "Areas retrieved successfully", result));
+        return Ok(new ApiResponse<IEnumerable<AreaResponseDto>>(true, "Areas retrieved successfully", result));
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<AreaDto>> GetById(Guid id)
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<AreaResponseDto>> GetById(Guid id)
     {
         try
         {
             var area = await _areaService.GetById(id);
 
-            return Ok(new ApiResponse<AreaDto>(true, "Area retrieved successfully", area));
+            return Ok(new ApiResponse<AreaResponseDto>(true, "Area retrieved successfully", area));
         }
         catch (KeyNotFoundException ex)
         { 
@@ -41,21 +42,21 @@ public class AreaController : ControllerBase
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<AreaDto>> Create([FromBody]CreateAreaDto areaDto)
+    public async Task<ActionResult<AreaResponseDto>> Create([FromBody]CreateAreaDto areaDto)
     {
         var area = await _areaService.Create(areaDto);
 
-        return Ok(new ApiResponse<AreaDto>(true, "Area created successfully", area));
+        return Ok(new ApiResponse<AreaResponseDto>(true, "Area created successfully", area));
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult<AreaDto>> Update(Guid id, [FromBody] CreateAreaDto areaDto)
+    public async Task<ActionResult<AreaResponseDto>> Update(Guid id, [FromBody] CreateAreaDto areaDto)
     {
         try
         {
             var updatedArea = await _areaService.Update(id, areaDto);
 
-            return Ok(new ApiResponse<AreaDto>(true, "Area updated successfully", updatedArea));
+            return Ok(new ApiResponse<AreaResponseDto>(true, "Area updated successfully", updatedArea));
         }
         catch (KeyNotFoundException ex)
         {

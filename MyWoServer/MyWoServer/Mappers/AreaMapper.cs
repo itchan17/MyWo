@@ -21,15 +21,16 @@ namespace MyWoServer.Mappers
             };
         }
 
-        public static AreaDto ToAreaDto(this Area area)
+        public static AreaResponseDto ToAreaResponseDto(this Area area, bool includeProjects = false)
         {
-            return new AreaDto
+            return new AreaResponseDto
             {
                 Id = area.Id,
                 Name = area.Name,
                 Description = area.Description,
                 Icon = area.Icon,
                 Color = area.Color,
+                Projects = includeProjects ? area.Projects.Select(project => project.ToProjectDto()).ToList() : [],
                 CreatedAt = area.CreatedAt,
                 UpdatedAt = area.UpdatedAt
             };

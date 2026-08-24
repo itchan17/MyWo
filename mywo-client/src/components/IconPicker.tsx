@@ -10,9 +10,10 @@ import { Input } from "@/components/ui/input";
 interface IconPickerProps {
   value: string;
   onChange: (iconName: string) => void;
+  hasError: boolean;
 }
 
-export const IconPicker = ({ value, onChange }: IconPickerProps) => {
+export const IconPicker = ({ value, onChange, hasError }: IconPickerProps) => {
   const [search, setSearch] = useState("");
   const [isOpen, setIsOpen] = useState(false);
 
@@ -24,7 +25,8 @@ export const IconPicker = ({ value, onChange }: IconPickerProps) => {
       .slice(0, 50);
   }, [iconNames, search]);
 
-  const SelectedIcon = icons[value as keyof typeof icons] ?? icons.Anvil;
+  const SelectedIcon =
+    icons[value as keyof typeof icons] ?? icons.CircleQuestionMark;
 
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
@@ -46,7 +48,7 @@ export const IconPicker = ({ value, onChange }: IconPickerProps) => {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           autoFocus
-          className="mb-2"
+          className={`mb-2 ${hasError ? "border-red-500 focus-visible:ring-red-500" : ""}`}
         />
         <div className="grid grid-cols-5 gap-2 max-h-48 overflow-y-auto p-1">
           {filteredIcons.map((name) => {

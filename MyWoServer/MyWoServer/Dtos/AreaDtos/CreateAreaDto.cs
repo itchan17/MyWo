@@ -8,7 +8,7 @@ namespace MyWoServer.Dtos.AreaDtos
         [StringLength(100)]
         public string Name { get; set; } = string.Empty;
 
-        [StringLength(500)]
+        [StringLength(500, ErrorMessage = "The Description cannot exceed 500 characters.")]
         public string? Description { get; set; }
 
         [StringLength(100)]
