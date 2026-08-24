@@ -1,10 +1,13 @@
-import Layout from "./components/layouts/Layout";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import WorkspacePage from "./pages/Workspace/WorkspacePage";
 
 function App() {
   return (
-    <Layout>
-      <div className="border border-red-700 h-1000 w-full"></div>
-    </Layout>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/workspace" element={<WorkspacePage />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 

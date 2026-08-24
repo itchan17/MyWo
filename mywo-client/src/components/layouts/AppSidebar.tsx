@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   Sidebar,
   SidebarContent,
@@ -12,6 +13,7 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
+import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import { LogOut, Plus, Layers } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,6 +22,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import AreaForm from "@/pages/Area/AreaForm";
 
 const areas = [
   {
@@ -70,6 +73,8 @@ const areas = [
 ];
 
 export default function AppSidebar() {
+  const [icon, setIcon] = useState("");
+
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader className="border flex flex-row items-center justify-between group-data-[collapsible=icon]:justify-center px-2 py-4">
@@ -98,16 +103,21 @@ export default function AppSidebar() {
           <SidebarMenu>
             {/* Add Area */}
             <SidebarMenuItem>
-              <Button
-                variant={"outline"}
-                className={"rounded-sm w-full"}
-                // tooltip={"Logout"}
-              >
-                <Plus className="text-2xl" />
-                <span className="group-data-[collapsible=icon]:hidden">
-                  Add area
-                </span>
-              </Button>
+              <Dialog>
+                <DialogTrigger
+                  render={
+                    <Button variant="outline" className="rounded-sm w-full">
+                      <Plus />
+                      <span className="group-data-[collapsible=icon]:hidden">
+                        Add area
+                      </span>
+                    </Button>
+                  }
+                />
+
+                {/* Create Area Form */}
+                <AreaForm />
+              </Dialog>
             </SidebarMenuItem>
 
             {/* Areas */}
