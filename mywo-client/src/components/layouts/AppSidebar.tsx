@@ -14,7 +14,7 @@ import {
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
-import { LogOut, Plus, Layers } from "lucide-react";
+import { LogOut, Plus, Layers, icons, Folder } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Accordion,
@@ -24,36 +24,11 @@ import {
 } from "@/components/ui/accordion";
 import AreaForm from "@/pages/Area/AreaForm";
 import api from "@/services/api";
-
-interface Area {
-  id: string;
-  name: string;
-  description: string;
-  icon: string;
-  color: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface areaWithProjects extends Area {
-  projects: Project[];
-}
-
-interface Project {
-  id: string;
-  name: string;
-  description: string;
-  startDate: string;
-  dueDate: string;
-  status: number;
-  createdAt: string;
-  updatedAt: string;
-  deletedAt: string | null;
-}
+import type { AreaWithProjects } from "@/types/AreaTypes/area.types";
 
 export default function AppSidebar() {
   const [openForm, setOpenForm] = useState(false);
-  const [areas, setAreas] = useState<areaWithProjects[]>([]);
+  const [areas, setAreas] = useState<AreaWithProjects[]>([]);
 
   useEffect(() => {
     const getAreas = async () => {
@@ -63,7 +38,6 @@ export default function AppSidebar() {
             includeProjects: true,
           },
         });
-        console.log(response);
         setAreas(response.data.data);
       } catch (error) {
         console.error(error);
@@ -72,6 +46,10 @@ export default function AppSidebar() {
 
     getAreas();
   }, []);
+
+  // A callback function pass to area form to add the area in the sidebar after creating
+  const addArea = (area: AreaWithProjects) =>
+    setAreas((prev) => [area, ...prev]);
 
   return (
     <Sidebar collapsible="icon">
@@ -114,49 +92,60 @@ export default function AppSidebar() {
                 />
 
                 {/* Create Area Form */}
-                <AreaForm open={openForm} onOpenChange={setOpenForm} />
+                <AreaForm
+                  open={openForm}
+                  onOpenChange={setOpenForm}
+                  addArea={addArea}
+                />
               </Dialog>
             </SidebarMenuItem>
 
             {/* Areas */}
             <Accordion multiple className="w-full">
-              {areas.map((area) => (
-                <AccordionItem
-                  key={area.id}
-                  value={String(area.id)}
-                  className="border-none"
-                >
-                  <div className="flex py-2 items-center justify-between hover:no-underline hover:bg-sidebar-accent rounded-md text-sm font-medium">
-                    <span className="hover:underline cursor-pointer">
-                      {area.name}
-                    </span>
-                    <AccordionTrigger
-                      className={
-                        "hover:bg-sidebar-accent hover:brightness-90 p-1 rounded-sm"
-                      }
-                    ></AccordionTrigger>
-                  </div>
+              {areas.map((area) => {
+                const Icon = icons[area.icon as keyof typeof icons];
 
-                  {/* Projects */}
-                  <AccordionContent className="pb-0">
-                    {area.projects.length > 0 ? (
-                      <SidebarMenuSub>
-                        {area.projects.map((project) => (
-                          <SidebarMenuSubItem key={project.id}>
-                            <SidebarMenuSubButton className={"no-underline!"}>
-                              <span>{project.name}</span>
-                            </SidebarMenuSubButton>
-                          </SidebarMenuSubItem>
-                        ))}
-                      </SidebarMenuSub>
-                    ) : (
-                      <div className="text-center text-chart-3">
-                        No projects
-                      </div>
-                    )}
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
+                return (
+                  <AccordionItem
+                    key={area.id}
+                    value={String(area.id)}
+                    className="border-none"
+                  >
+                    <SidebarMenuItem>
+                      <SidebarMenuButton
+                        render={
+                          <AccordionTrigger className="rounded-sm p-1 hover:bg-sidebar-accent hover:brightness-90" />
+                        }
+                      >
+                        {Icon ? <Icon className="size-4" /> : <Folder />}
+
+                        <span className="mr-auto cursor-pointer hover:underline">
+                          {area.name}
+                        </span>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+
+                    {/* Projects */}
+                    <AccordionContent className="pb-0">
+                      {area.projects.length > 0 ? (
+                        <SidebarMenuSub>
+                          {area.projects.map((project) => (
+                            <SidebarMenuSubItem key={project.id}>
+                              <SidebarMenuSubButton className={"no-underline!"}>
+                                <span>{project.name}</span>
+                              </SidebarMenuSubButton>
+                            </SidebarMenuSubItem>
+                          ))}
+                        </SidebarMenuSub>
+                      ) : (
+                        <div className="text-center text-chart-3">
+                          No projects
+                        </div>
+                      )}
+                    </AccordionContent>
+                  </AccordionItem>
+                );
+              })}
             </Accordion>
           </SidebarMenu>
         </SidebarGroup>

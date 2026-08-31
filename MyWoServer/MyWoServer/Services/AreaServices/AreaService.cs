@@ -2,7 +2,6 @@
 using MyWoServer.Data;
 using MyWoServer.Dtos.AreaDtos;
 using MyWoServer.Mappers;
-using MyWoServer.Models;
 
 namespace MyWoServer.Services.AreaServices;
 
@@ -26,6 +25,7 @@ public class AreaService : IAreaService
         }
       
         return await query
+            .OrderByDescending(area => area.CreatedAt)
             .Select(area => area.ToAreaResponseDto(includeProjects))
             .ToListAsync();
     }

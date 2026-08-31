@@ -17,24 +17,23 @@ import { Button } from "@/components/ui/button";
 import api from "@/services/api";
 import { Spinner } from "@/components/ui/spinner";
 import axios from "axios";
-
-interface AreaForm {
-  name: string;
-  description: string;
-  icon: string;
-  color: string;
-}
+import type { AreaForm, AreaWithProjects } from "@/types/AreaTypes/area.types";
 
 interface AreaFormProps {
   open: boolean;
   onOpenChange: (value: boolean) => void;
+  addArea: (area: AreaWithProjects) => void;
 }
 
 type ValidationErrors = {
   [key: string]: string[];
 };
 
-export default function AreaForm({ open, onOpenChange }: AreaFormProps) {
+export default function AreaForm({
+  open,
+  onOpenChange,
+  addArea,
+}: AreaFormProps) {
   const [areaForm, setAreaForm] = useState<AreaForm>({
     name: "",
     description: "",
@@ -75,7 +74,8 @@ export default function AreaForm({ open, onOpenChange }: AreaFormProps) {
     setIsLoading(true);
     try {
       const response = await api.post("/areas", areaForm);
-      console.log(response);
+
+      addArea(response.data.data);
       resetForm();
       onOpenChange(false);
     } catch (error) {
