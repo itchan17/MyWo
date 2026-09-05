@@ -28,7 +28,7 @@ public class ProjectService : IProjectService
         var project = await _appDbContext.Projects.FindAsync(id);
 
         if(project is null)
-            throw new KeyNotFoundException($"Project with Id {id} not found.");
+            throw new KeyNotFoundException($"Project with ID {id} was not found.");
 
         return project.ToProjectDto();
     }
@@ -38,7 +38,8 @@ public class ProjectService : IProjectService
     {
         var areaExist = await _appDbContext.Areas.AnyAsync(a => a.Id == createDto.AreaId);
 
-        if (!areaExist) throw new KeyNotFoundException("Area not found");
+        if (!areaExist)
+            throw new KeyNotFoundException($"Area with ID '{createDto.AreaId}' was not found.");
 
         var project = createDto.ToProject();
 
@@ -54,7 +55,7 @@ public class ProjectService : IProjectService
         var project = await _appDbContext.Projects.FindAsync(id);
 
         if(project is null)
-            throw new KeyNotFoundException($"Project with Id {id} not found.");
+            throw new KeyNotFoundException($"Project with ID {id} was not found.");
 
         project.Name = updateDto.Name;
         project.Description = updateDto.Description;
@@ -73,7 +74,7 @@ public class ProjectService : IProjectService
         var project = await _appDbContext.Projects.FindAsync(id);
 
         if (project is null)
-            throw new KeyNotFoundException($"Project with Id {id} not found.");
+            throw new KeyNotFoundException($"Project with ID {id} was not found.");
 
         _appDbContext.Projects.Remove(project);
         await _appDbContext.SaveChangesAsync();

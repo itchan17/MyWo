@@ -64,7 +64,7 @@ public class AreaService : IAreaService
         var area = await _appDbContext.Areas.FirstOrDefaultAsync(x => x.Id == id);
 
         if(area is null)
-            throw new KeyNotFoundException("Area was not found");
+            throw new KeyNotFoundException($"Area with ID '{id}' was not found.");
 
         return area.ToAreaResponseDto();
     }
@@ -85,7 +85,7 @@ public class AreaService : IAreaService
         var area = await _appDbContext.Areas.FirstOrDefaultAsync(x => x.Id == id);
 
         if (area == null)
-            throw new KeyNotFoundException("Area was not found");
+            throw new KeyNotFoundException($"Area with ID '{id}' was not found.");
 
         area.Name = areaDto.Name;
         area.Description = areaDto.Description;
@@ -103,9 +103,9 @@ public class AreaService : IAreaService
         var area = _appDbContext.Areas.FirstOrDefault(x => x.Id == id);
 
         if(area is null)
-            throw new KeyNotFoundException("Area was not found");
+            throw new KeyNotFoundException($"Area with ID '{id}' was not found.");
 
-         _appDbContext.Areas.Remove(area);
+        _appDbContext.Areas.Remove(area);
 
         await _appDbContext.SaveChangesAsync();
     }

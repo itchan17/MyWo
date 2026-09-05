@@ -42,8 +42,10 @@ namespace MyWoServer.Controllers
             }
             catch (KeyNotFoundException ex)
             {
-                return NotFound(
-                    new ApiResponse<object>(false, ex.Message, null)
+                return Problem(
+                    statusCode: StatusCodes.Status404NotFound,
+                    title: "Project Not Found",
+                    detail: ex.Message
                 );
             }
         }
@@ -58,8 +60,12 @@ namespace MyWoServer.Controllers
                 return Ok(new ApiResponse<ProjectDto>(true, "Project created successfully", project));
             }
             catch (KeyNotFoundException ex)
-            { 
-                return NotFound(new ApiResponse<object>(false, ex.Message, null));
+            {
+                return Problem(
+                    statusCode: StatusCodes.Status404NotFound,
+                    title: "Area Not Found",
+                    detail: ex.Message
+                );
             }
         }
 
@@ -75,7 +81,11 @@ namespace MyWoServer.Controllers
             }
             catch (KeyNotFoundException ex)
             {
-                return NotFound(new ApiResponse<object>(false, ex.Message, null));
+                return Problem(
+                    statusCode: StatusCodes.Status404NotFound,
+                    title: "Project Not Found",
+                    detail: ex.Message
+                );
             }
         }
 
@@ -89,7 +99,11 @@ namespace MyWoServer.Controllers
             }
             catch (KeyNotFoundException ex)
             {
-                return NotFound(new ApiResponse<object>(false, ex.Message, null));
+                return Problem(
+                    statusCode: StatusCodes.Status404NotFound,
+                    title: "Project Not Found",
+                    detail: ex.Message
+                );
             }
         }
     }

@@ -18,7 +18,7 @@ interface AreaCardProps {
 }
 
 export default function AreaCard({ area }: AreaCardProps) {
-  const Icon = area.icon ? icons[area.icon as keyof typeof icons] : Code;
+  const Icon = icons[area.icon as keyof typeof icons] ?? Code;
 
   return (
     <Card className="group">

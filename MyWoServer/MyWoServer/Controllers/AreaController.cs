@@ -36,8 +36,12 @@ public class AreaController : ControllerBase
             return Ok(new ApiResponse<AreaResponseDto>(true, "Area retrieved successfully", area));
         }
         catch (KeyNotFoundException ex)
-        { 
-            return NotFound(new ApiResponse<object>(false, ex.Message, null));
+        {
+            return Problem(
+                statusCode: StatusCodes.Status404NotFound,
+                title: "Area Not Found",
+                detail: ex.Message
+            );
         }
     }
 
@@ -62,7 +66,11 @@ public class AreaController : ControllerBase
         }
         catch (KeyNotFoundException ex)
         {
-            return NotFound(new ApiResponse<object>(false, ex.Message, null));
+            return Problem(
+                statusCode: StatusCodes.Status404NotFound,
+                title: "Area Not Found",
+                detail: ex.Message
+            );
         }
     }
 
@@ -76,7 +84,11 @@ public class AreaController : ControllerBase
         }
         catch (KeyNotFoundException ex)
         {
-            return NotFound(new ApiResponse<object>(false, ex.Message, null));
+            return Problem(
+                statusCode: StatusCodes.Status404NotFound,
+                title: "Area Not Found",
+                detail: ex.Message
+            );
         }
     }
 }
