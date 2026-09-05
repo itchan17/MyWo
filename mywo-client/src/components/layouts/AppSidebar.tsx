@@ -24,21 +24,27 @@ import {
 } from "@/components/ui/accordion";
 import AreaForm from "@/pages/Area/AreaForm";
 import api from "@/services/api";
-import type { AreaWithProjects } from "@/types/AreaTypes/area.types";
+import { useAreaStore } from "@/stores/areaStore";
 
 export default function AppSidebar() {
+  // Area store
+  const areas = useAreaStore((state) => state.areas);
+  const setAreas = useAreaStore((state) => state.setAreas);
+
   const [openForm, setOpenForm] = useState(false);
-  const [areas, setAreas] = useState<AreaWithProjects[]>([]);
 
   useEffect(() => {
+    console.log("RENDER SIDEBAR");
     const getAreas = async () => {
       try {
         const response = await api.get("/areas", {
           params: {
             includeProjects: true,
+            pageNumber: 1,
+            pageSize: 20,
           },
         });
-        setAreas(response.data.data);
+        setAreas(response.data.data.items);
       } catch (error) {
         console.error(error);
       }
@@ -46,10 +52,6 @@ export default function AppSidebar() {
 
     getAreas();
   }, []);
-
-  // A callback function pass to area form to add the area in the sidebar after creating
-  const addArea = (area: AreaWithProjects) =>
-    setAreas((prev) => [area, ...prev]);
 
   return (
     <Sidebar collapsible="icon">
@@ -92,11 +94,7 @@ export default function AppSidebar() {
                 />
 
                 {/* Create Area Form */}
-                <AreaForm
-                  open={openForm}
-                  onOpenChange={setOpenForm}
-                  addArea={addArea}
-                />
+                <AreaForm open={openForm} onOpenChange={setOpenForm} />
               </Dialog>
             </SidebarMenuItem>
 
