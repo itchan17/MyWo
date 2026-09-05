@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using MyWoServer.Dtos;
 using MyWoServer.Dtos.AreaDtos;
+using MyWoServer.Models;
 using MyWoServer.Services.AreaServices;
 using MyWoServer.Shared;
 
@@ -16,11 +18,11 @@ public class AreaController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<AreaResponseDto>>> GetAll([FromQuery] bool includeProjects = false)
+    public async Task<ActionResult<PagedResult<AreaResponseDto>>> GetAll([FromQuery] PaginationParams pagination, [FromQuery] bool includeProjects = false)
     {
-        var result = await _areaService.GetAll(includeProjects);
+        var result = await _areaService.GetAll(pagination, includeProjects);
 
-        return Ok(new ApiResponse<IEnumerable<AreaResponseDto>>(true, "Areas retrieved successfully", result));
+        return Ok(new ApiResponse<PagedResult<AreaResponseDto>>(true, "Areas retrieved successfully", result));
     }
 
     [HttpGet("{id}")]

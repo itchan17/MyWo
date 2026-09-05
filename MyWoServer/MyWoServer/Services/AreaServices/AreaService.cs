@@ -1,7 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MyWoServer.Data;
+using MyWoServer.Dtos;
 using MyWoServer.Dtos.AreaDtos;
 using MyWoServer.Mappers;
+using MyWoServer.Models;
 
 namespace MyWoServer.Services.AreaServices;
 
@@ -14,20 +16,47 @@ public class AreaService : IAreaService
         _appDbContext = appDbContext;
     }
 
-    public async Task<IEnumerable<AreaResponseDto>> GetAll(bool includeProjects = false)
+    public async Task<PagedResult<AreaResponseDto>> GetAll(PaginationParams pagination, bool includeProjects = false)
     {
         var query = _appDbContext.Areas
+               .OrderByDescending(area => area.CreatedAt)
                .AsQueryable();
 
         if (includeProjects)
         {
             query = query.Include(area => area.Projects);
         }
-      
-        return await query
-            .OrderByDescending(area => area.CreatedAt)
-            .Select(area => area.ToAreaResponseDto(includeProjects))
-            .ToListAsync();
+
+        if (pagination.IsPaginated)
+        {
+            var totalCount = await query.CountAsync();
+
+            var items = await query
+                .Skip((pagination.PageNumber.Value - 1) * pagination.PageSize.Value)
+                .Take(pagination.PageSize.Value)
+                .Select(area => area.ToAreaResponseDto(includeProjects))
+                .ToListAsync();
+
+            return new PagedResult<AreaResponseDto>
+            {
+                Items = items,
+                PageNumber = pagination.PageNumber.Value,
+                PageSize = pagination.PageSize.Value,
+                TotalCount = totalCount
+            };
+        }
+        else
+        { 
+            return new PagedResult<AreaResponseDto>
+            {
+                Items = await query.Select(area => area.ToAreaResponseDto(includeProjects)).ToListAsync(),
+                PageNumber = 1,
+                PageSize = await query.CountAsync(),
+                TotalCount = await query.CountAsync()
+            };
+        }
+        
+       
     }
 
     public async Task<AreaResponseDto> GetById(Guid id)
