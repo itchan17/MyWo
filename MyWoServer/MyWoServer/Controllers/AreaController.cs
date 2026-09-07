@@ -46,13 +46,19 @@ public class AreaController : ControllerBase
     }
 
     [HttpPost]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<AreaResponseDto>> Create([FromBody]CreateAreaDto areaDto)
     {
         var area = await _areaService.Create(areaDto);
 
-        return Ok(new ApiResponse<AreaResponseDto>(true, "Area created successfully", area));
+        var response = new ApiResponse<AreaResponseDto>(true, "Area created successfully", area);
+
+        return CreatedAtAction(
+            nameof(GetById),
+            new { id = area.Id },
+            response
+        );
     }
 
     [HttpPut("{id}")]

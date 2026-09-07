@@ -19,6 +19,7 @@ import { Spinner } from "@/components/ui/spinner";
 import axios from "axios";
 import type { AreaForm } from "@/types/AreaTypes/area.types";
 import { useAreaStore } from "@/stores/areaStore";
+import { useNavigate } from "react-router-dom";
 
 interface AreaFormProps {
   open: boolean;
@@ -30,6 +31,8 @@ type ValidationErrors = {
 };
 
 export default function AreaForm({ open, onOpenChange }: AreaFormProps) {
+  const navigate = useNavigate();
+
   // Area store
   const addArea = useAreaStore((state) => state.addArea);
 
@@ -73,10 +76,13 @@ export default function AreaForm({ open, onOpenChange }: AreaFormProps) {
     setIsLoading(true);
     try {
       const response = await api.post("/areas", areaForm);
+      const area = response.data.data;
 
-      addArea(response.data.data);
+      addArea(area);
       resetForm();
       onOpenChange(false);
+
+      navigate(`/areas/${area.id}`);
     } catch (error) {
       if (axios.isAxiosError(error)) {
         const responseData = error.response?.data;
