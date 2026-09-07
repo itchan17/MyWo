@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import {
+  Dialog,
   DialogClose,
   DialogContent,
   DialogDescription,
@@ -17,24 +18,34 @@ import { Button } from "@/components/ui/button";
 import api from "@/services/api";
 import { Spinner } from "@/components/ui/spinner";
 import axios from "axios";
-import type { AreaForm } from "@/types/AreaTypes/area.types";
+import type { AreaForm, AreaWithProjects } from "@/types/AreaTypes/area.types";
 import { useAreaStore } from "@/stores/areaStore";
 import { useNavigate } from "react-router-dom";
 
 interface AreaFormProps {
   open: boolean;
   onOpenChange: (value: boolean) => void;
+  area?: AreaWithProjects | null;
+  onAreaChange?: ((area: AreaWithProjects) => void) | null;
+  isUpdate?: boolean;
 }
 
 type ValidationErrors = {
   [key: string]: string[];
 };
 
-export default function AreaForm({ open, onOpenChange }: AreaFormProps) {
+export default function AreaForm({
+  open,
+  onOpenChange,
+  area = null,
+  onAreaChange = null,
+  isUpdate = false,
+}: AreaFormProps) {
   const navigate = useNavigate();
 
   // Area store
   const addArea = useAreaStore((state) => state.addArea);
+  const updateArea = useAreaStore((state) => state.updateArea);
 
   const [areaForm, setAreaForm] = useState<AreaForm>({
     name: "",
@@ -42,14 +53,21 @@ export default function AreaForm({ open, onOpenChange }: AreaFormProps) {
     icon: "",
     color: "",
   });
+
+  console.log(area);
+  console.log(isUpdate);
+  console.log(areaForm);
+
   const [errors, setErrors] = useState<ValidationErrors>({});
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (!open) {
       resetForm();
+    } else if (area && isUpdate) {
+      setAreaForm(area);
     }
-  }, [open]);
+  }, [open, area, isUpdate]);
 
   const resetForm = () => {
     setErrors({});
@@ -75,14 +93,23 @@ export default function AreaForm({ open, onOpenChange }: AreaFormProps) {
     setErrors({});
     setIsLoading(true);
     try {
-      const response = await api.post("/areas", areaForm);
-      const area = response.data.data;
+      let areaData;
 
-      addArea(area);
+      if (area && isUpdate) {
+        const response = await api.put(`/areas/${area.id}`, areaForm);
+        areaData = response.data.data;
+        updateArea(areaData);
+        onAreaChange?.(areaData);
+      } else {
+        const response = await api.post("/areas", areaForm);
+        areaData = response.data.data;
+        addArea(areaData);
+      }
+
       resetForm();
       onOpenChange(false);
 
-      navigate(`/areas/${area.id}`);
+      navigate(`/areas/${areaData.id}`);
     } catch (error) {
       if (axios.isAxiosError(error)) {
         const responseData = error.response?.data;
@@ -99,10 +126,12 @@ export default function AreaForm({ open, onOpenChange }: AreaFormProps) {
   };
 
   return (
-    <form>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent showCloseButton={false}>
         <DialogHeader>
-          <DialogTitle>Add Area</DialogTitle>
+          <DialogTitle>
+            {area && isUpdate ? "Update Area" : "Add Area"}
+          </DialogTitle>
           <DialogDescription>
             Create a new area to organize your projects and keep your workspace
             structured.
@@ -177,11 +206,11 @@ export default function AreaForm({ open, onOpenChange }: AreaFormProps) {
 
         <DialogFooter>
           <DialogClose render={<Button variant={"outline"}>Cancel</Button>} />
-          <Button type="button" onClick={submit}>
-            {isLoading ? <Spinner /> : "Add"}
+          <Button type="button" onClick={submit} disabled={isLoading}>
+            {isLoading ? <Spinner /> : isUpdate ? "Save" : "Add"}
           </Button>
         </DialogFooter>
       </DialogContent>
-    </form>
+    </Dialog>
   );
 }

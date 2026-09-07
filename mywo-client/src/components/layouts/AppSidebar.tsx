@@ -13,7 +13,6 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
-import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import { LogOut, Plus, Layers, icons, Folder } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -84,76 +83,79 @@ export default function AppSidebar() {
         <SidebarGroup>
           <SidebarGroupLabel>Areas</SidebarGroupLabel>
 
-          <SidebarMenu>
+          <SidebarMenu className="gap-2">
             {/* Add Area */}
-            <SidebarMenuItem>
-              <Dialog open={openForm} onOpenChange={setOpenForm}>
-                <DialogTrigger
-                  render={
-                    <Button variant="outline" className="rounded-sm w-full">
-                      <Plus />
-                      <span className="group-data-[collapsible=icon]:hidden">
-                        Add area
-                      </span>
-                    </Button>
-                  }
-                />
+            <SidebarMenuItem className="mb-1">
+              <Button
+                variant="outline"
+                className="w-full rounded-sm"
+                onClick={() => setOpenForm(true)}
+              >
+                <Plus />
+                <span className="group-data-[collapsible=icon]:hidden">
+                  Add area
+                </span>
+              </Button>
 
-                {/* Create Area Form */}
+              {openForm && (
                 <AreaForm open={openForm} onOpenChange={setOpenForm} />
-              </Dialog>
+              )}
             </SidebarMenuItem>
 
             {/* Areas */}
-            <Accordion multiple className="w-full">
-              {areas.map((area) => {
-                const Icon = icons[area.icon as keyof typeof icons];
+            <SidebarMenuItem>
+              <Accordion multiple className="w-full space-y-1">
+                {areas.map((area) => {
+                  const Icon = icons[area.icon as keyof typeof icons] ?? Folder;
 
-                return (
-                  <AccordionItem
-                    key={area.id}
-                    value={String(area.id)}
-                    className="border-none"
-                  >
-                    <SidebarMenuItem>
+                  return (
+                    <AccordionItem
+                      key={area.id}
+                      value={String(area.id)}
+                      className="border-none"
+                    >
                       <SidebarMenuButton
                         render={
-                          <AccordionTrigger className="rounded-sm p-1 hover:bg-sidebar-accent hover:brightness-90" />
+                          <AccordionTrigger className="rounded-sm px-2 py-1.5 gap-2 hover:bg-sidebar-accent " />
                         }
                       >
-                        {Icon ? <Icon className="size-4" /> : <Folder />}
+                        {Icon ? (
+                          <Icon className="size-4 shrink-0" />
+                        ) : (
+                          <Folder />
+                        )}
 
                         <span
                           onClick={() => navigate(`/areas/${area.id}`)}
-                          className="mr-auto cursor-pointer hover:underline"
+                          className="mr-auto cursor-pointer hover:underline truncate"
                         >
                           {area.name}
                         </span>
                       </SidebarMenuButton>
-                    </SidebarMenuItem>
 
-                    {/* Projects */}
-                    <AccordionContent className="pb-0">
-                      {area.projects.length > 0 ? (
-                        <SidebarMenuSub>
-                          {area.projects.map((project) => (
-                            <SidebarMenuSubItem key={project.id}>
-                              <SidebarMenuSubButton className={"no-underline!"}>
-                                <span>{project.name}</span>
-                              </SidebarMenuSubButton>
-                            </SidebarMenuSubItem>
-                          ))}
-                        </SidebarMenuSub>
-                      ) : (
-                        <div className="text-center text-chart-3">
-                          No projects
-                        </div>
-                      )}
-                    </AccordionContent>
-                  </AccordionItem>
-                );
-              })}
-            </Accordion>
+                      {/* Projects */}
+                      <AccordionContent className="pb-1 pt-1">
+                        {area.projects.length > 0 ? (
+                          <SidebarMenuSub className="gap-1 ml-2 border-sidebar-border">
+                            {area.projects.map((project) => (
+                              <SidebarMenuSubItem key={project.id}>
+                                <SidebarMenuSubButton className="no-underline!">
+                                  <span>{project.name}</span>
+                                </SidebarMenuSubButton>
+                              </SidebarMenuSubItem>
+                            ))}
+                          </SidebarMenuSub>
+                        ) : (
+                          <div className="text-center text-chart-3 py-1 text-sm">
+                            No projects
+                          </div>
+                        )}
+                      </AccordionContent>
+                    </AccordionItem>
+                  );
+                })}
+              </Accordion>
+            </SidebarMenuItem>
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>

@@ -5,6 +5,7 @@ interface AreaStore {
   areas: AreaWithProjects[];
   setAreas: (areas: AreaWithProjects[]) => void;
   addArea: (area: AreaWithProjects) => void;
+  updateArea: (area: AreaWithProjects) => void;
 }
 
 export const useAreaStore = create<AreaStore>((set) => ({
@@ -15,5 +16,10 @@ export const useAreaStore = create<AreaStore>((set) => ({
   addArea: (area) =>
     set((state) => ({
       areas: [area, ...state.areas],
+    })),
+
+  updateArea: (area) =>
+    set((state) => ({
+      areas: state.areas.map((a) => (a.id === area.id ? area : a)),
     })),
 }));

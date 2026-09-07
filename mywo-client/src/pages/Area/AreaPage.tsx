@@ -1,18 +1,27 @@
 import { useEffect, useState } from "react";
 import Layout from "@/components/layouts/Layout";
-import { Code, MoreVertical, Plus, CalendarDays } from "lucide-react";
+import { Folder, MoreVertical, Plus, icons } from "lucide-react";
 import { useParams } from "react-router-dom";
 import api from "@/services/api";
 import type { AreaWithProjects } from "@/types/AreaTypes/area.types";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { Separator } from "@/components/ui/separator";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@/components/ui/popover";
+import ProjectCard from "./ProjectCard";
+import AreaStatCard from "./AreaStatCard";
+import AreaForm from "./AreaForm";
 
 export default function AreaPage() {
   const { id: areaId } = useParams();
 
   const [area, setArea] = useState<AreaWithProjects | null>();
+  const [openForm, setOpenForm] = useState(false);
+  const [openPopover, setOpenPopover] = useState(false);
 
   useEffect(() => {
     const getArea = async () => {
@@ -30,71 +39,6 @@ export default function AreaPage() {
     getArea();
   }, [areaId]);
 
-  interface StatCardProps {
-    title: string;
-    value: number;
-  }
-
-  const StatCard = ({ title, value }: StatCardProps) => (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-sm font-medium text-muted-foreground">
-          {title}
-        </CardTitle>
-      </CardHeader>
-
-      <CardContent>
-        <div className="text-2xl font-bold">{value}</div>
-      </CardContent>
-    </Card>
-  );
-
-  interface ProjectCardProps {
-    name: string;
-    description: string;
-    startDate: string;
-    dueDate: string;
-  }
-
-  const ProjectCard = ({
-    name,
-    description,
-    startDate,
-    dueDate,
-  }: ProjectCardProps) => {
-    const formatDate = (date: string) => {
-      return new Date(date).toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-      });
-    };
-
-    return (
-      <Card className="cursor-pointer transition-colors hover:bg-muted/50">
-        <CardHeader>
-          <CardTitle className="text-base">{name}</CardTitle>
-
-          <p className="line-clamp-2 text-sm text-muted-foreground">
-            {description}
-          </p>
-        </CardHeader>
-
-        <CardContent>
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <CalendarDays className="size-4" />
-
-            <span>{formatDate(startDate)}</span>
-
-            <span>→</span>
-
-            <span>{formatDate(dueDate)}</span>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  };
-
   return (
     <Layout>
       {!area ? (
@@ -103,7 +47,7 @@ export default function AreaPage() {
         </div>
       ) : (
         <div className="flex h-full flex-col space-y-5">
-          <header className="flex space-x-20">
+          <header className="flex justify-between space-x-5 sm:space-x-20">
             <div className="flex items-start gap-3">
               {/* Icon */}
               <div
@@ -118,36 +62,77 @@ export default function AreaPage() {
                   } as React.CSSProperties
                 }
               >
-                <Code className="size-5" />
+                {/* Dynamically set the icon */}
+                {(() => {
+                  const Icon = icons[area.icon as keyof typeof icons] ?? Folder;
+                  return <Icon className="size-5" />;
+                })()}
               </div>
 
               <div>
                 <h3 className="text-xl font-semibold">{area.name}</h3>
                 <p className="text-sm font-normal text-muted-foreground">
-                  Personal projects and tasks Personal projects and tasks
-                  Personal projects and tasks Personal projects and tasks
-                  Personal projects and tasks Personal projects and tasks
-                  Personal projects and tasks Personal projects and tasks
-                  Personal projects and tasks Personal projects and tasks
-                  Personal projects and tasks Personal projects and tasks
-                  Personal projects and tasks Personal projects and tasks
-                  Personal projects and tasks
+                  {area.description}
                 </p>
               </div>
             </div>
+
+            {/* Options */}
             <div>
-              <Button variant="ghost" size="icon">
-                <MoreVertical />
-              </Button>
+              <Popover open={openPopover} onOpenChange={setOpenPopover}>
+                <PopoverTrigger
+                  render={
+                    <Button variant="ghost" size="icon">
+                      <MoreVertical />
+                    </Button>
+                  }
+                />
+
+                <PopoverContent align="end" className="w-40 p-1">
+                  <div className="flex flex-col gap-1">
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start"
+                      onClick={() => {
+                        setOpenPopover(false);
+                        setOpenForm(true);
+                      }}
+                    >
+                      Update area
+                    </Button>
+
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start text-destructive hover:text-destructive"
+                      onClick={() => {
+                        setOpenPopover(false);
+                        // delete logic
+                      }}
+                    >
+                      Delete area
+                    </Button>
+                  </div>
+                </PopoverContent>
+              </Popover>
+
+              {openForm && (
+                <AreaForm
+                  open={openForm}
+                  onOpenChange={setOpenForm}
+                  area={area}
+                  onAreaChange={setArea}
+                  isUpdate={true}
+                />
+              )}
             </div>
           </header>
           <Separator></Separator>
 
           {/* Stat Cards */}
           <section className="grid sm:grid-cols-4 gap-5">
-            <StatCard title={"Projects"} value={8} />
-            <StatCard title={"Active Tasks"} value={12} />
-            <StatCard title={"Completed Tasks"} value={5} />
+            <AreaStatCard title={"Projects"} value={8} />
+            <AreaStatCard title={"Active Tasks"} value={12} />
+            <AreaStatCard title={"Completed Tasks"} value={5} />
           </section>
 
           <Separator></Separator>
@@ -160,30 +145,32 @@ export default function AreaPage() {
                 <Plus /> New Project
               </Button>
             </header>
-            {/* <div className="w-full h-full flex items-center justify-center border">
-              <p className="text-gray-600">No Projects</p>
-            </div> */}
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-              <ProjectCard
-                name="My Portfolio"
-                description="Build my personal developer portfolio."
-                startDate="2026-09-07T00:15:19.344Z"
-                dueDate="2026-10-30T00:15:19.344Z"
-              />
-              <ProjectCard
-                name="My Portfolio"
-                description="Build my personal developer portfolio."
-                startDate="2026-09-07T00:15:19.344Z"
-                dueDate="2026-10-30T00:15:19.344Z"
-              />
-              <ProjectCard
-                name="My Portfolio"
-                description="Build my personal developer portfolio."
-                startDate="2026-09-07T00:15:19.344Z"
-                dueDate="2026-10-30T00:15:19.344Z"
-              />
-            </div>
+            {area.projects.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                <ProjectCard
+                  name="My Portfolio"
+                  description="Build my personal developer portfolio."
+                  startDate="2026-09-07T00:15:19.344Z"
+                  dueDate="2026-10-30T00:15:19.344Z"
+                />
+                <ProjectCard
+                  name="My Portfolio"
+                  description="Build my personal developer portfolio."
+                  startDate="2026-09-07T00:15:19.344Z"
+                  dueDate="2026-10-30T00:15:19.344Z"
+                />
+                <ProjectCard
+                  name="My Portfolio"
+                  description="Build my personal developer portfolio."
+                  startDate="2026-09-07T00:15:19.344Z"
+                  dueDate="2026-10-30T00:15:19.344Z"
+                />
+              </div>
+            ) : (
+              <div className="w-full h-full flex items-center justify-center">
+                <p className="text-gray-600">No Projects</p>
+              </div>
+            )}
           </section>
         </div>
       )}
