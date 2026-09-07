@@ -25,8 +25,11 @@ import {
 import AreaForm from "@/pages/Area/AreaForm";
 import api from "@/services/api";
 import { useAreaStore } from "@/stores/areaStore";
+import { useNavigate } from "react-router-dom";
 
 export default function AppSidebar() {
+  const navigate = useNavigate();
+
   // Area store
   const areas = useAreaStore((state) => state.areas);
   const setAreas = useAreaStore((state) => state.setAreas);
@@ -55,7 +58,7 @@ export default function AppSidebar() {
 
   return (
     <Sidebar collapsible="icon">
-      <SidebarHeader className="border flex flex-row items-center justify-between group-data-[collapsible=icon]:justify-center px-2 py-4">
+      <SidebarHeader className="border-b h-16 flex flex-row items-center justify-between group-data-[collapsible=icon]:justify-center px-2">
         <span className="font-semibold text-xl group-data-[collapsible=icon]:hidden">
           MyWo
         </span>
@@ -66,7 +69,10 @@ export default function AppSidebar() {
         <SidebarGroup>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton tooltip="Explore">
+              <SidebarMenuButton
+                tooltip="Explore"
+                onClick={() => navigate("/workspace")}
+              >
                 <Layers />
                 <span>Workspace</span>
               </SidebarMenuButton>
@@ -117,7 +123,10 @@ export default function AppSidebar() {
                       >
                         {Icon ? <Icon className="size-4" /> : <Folder />}
 
-                        <span className="mr-auto cursor-pointer hover:underline">
+                        <span
+                          onClick={() => navigate(`/areas/${area.id}`)}
+                          className="mr-auto cursor-pointer hover:underline"
+                        >
                           {area.name}
                         </span>
                       </SidebarMenuButton>
