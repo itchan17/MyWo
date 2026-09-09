@@ -11,7 +11,7 @@ import {
 import { Code, MoreHorizontal, ArrowRight, icons } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import type { AreaWithProjects } from "@/types/AreaTypes/area.types";
+import type { AreaWithProjects } from "@/types/area.types";
 
 interface AreaCardProps {
   area: AreaWithProjects;

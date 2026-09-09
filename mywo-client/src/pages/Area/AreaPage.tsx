@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import Layout from "@/components/layouts/Layout";
-import { Folder, MoreVertical, Plus, icons } from "lucide-react";
+import { Folder, MoreVertical, icons } from "lucide-react";
 import { useParams } from "react-router-dom";
 import api from "@/services/api";
-import type { AreaWithProjects } from "@/types/AreaTypes/area.types";
+import type { AreaWithProjects } from "@/types/area.types";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { Separator } from "@/components/ui/separator";
@@ -21,10 +21,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import ProjectCard from "./ProjectCard";
 import AreaStatCard from "./AreaStatCard";
 import AreaForm from "./AreaForm";
 import { useNavigate } from "react-router-dom";
+import ProjectSection from "./ProjectSection";
 
 export default function AreaPage() {
   const { id: areaId } = useParams();
@@ -200,40 +200,7 @@ export default function AreaPage() {
           <Separator></Separator>
 
           {/* Projects */}
-          <section className="flex min-h-0 flex-1 flex-col space-y-3">
-            <header className="flex justify-between items-center">
-              <h1 className="text-base font-semibold">Projects</h1>
-              <Button>
-                <Plus /> New Project
-              </Button>
-            </header>
-            {area.projects.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-                <ProjectCard
-                  name="My Portfolio"
-                  description="Build my personal developer portfolio."
-                  startDate="2026-09-07T00:15:19.344Z"
-                  dueDate="2026-10-30T00:15:19.344Z"
-                />
-                <ProjectCard
-                  name="My Portfolio"
-                  description="Build my personal developer portfolio."
-                  startDate="2026-09-07T00:15:19.344Z"
-                  dueDate="2026-10-30T00:15:19.344Z"
-                />
-                <ProjectCard
-                  name="My Portfolio"
-                  description="Build my personal developer portfolio."
-                  startDate="2026-09-07T00:15:19.344Z"
-                  dueDate="2026-10-30T00:15:19.344Z"
-                />
-              </div>
-            ) : (
-              <div className="w-full h-full flex items-center justify-center">
-                <p className="text-gray-600">No Projects</p>
-              </div>
-            )}
-          </section>
+          <ProjectSection areaProjects={area.projects} />
         </div>
       )}
     </Layout>

@@ -21,7 +21,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import AreaForm from "@/pages/Area/AreaForm";
+import AreaForm from "@/pages/area/AreaForm";
 import api from "@/services/api";
 import { useAreaStore } from "@/stores/areaStore";
 import { useNavigate } from "react-router-dom";

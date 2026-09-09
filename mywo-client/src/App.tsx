@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import WorkspacePage from "./pages/Workspace/WorkspacePage";
-import AreaPage from "./pages/Area/AreaPage";
+import WorkspacePage from "./pages/workspace/WorkspacePage";
+import AreaPage from "./pages/area/AreaPage";
 
 function App() {
   return (

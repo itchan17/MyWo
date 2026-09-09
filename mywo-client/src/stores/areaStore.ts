@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import type { AreaWithProjects } from "@/types/AreaTypes/area.types";
+import type { AreaWithProjects } from "@/types/area.types";
 
 interface AreaStore {
   areas: AreaWithProjects[];

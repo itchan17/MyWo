@@ -18,7 +18,7 @@ import { Button } from "@/components/ui/button";
 import api from "@/services/api";
 import { Spinner } from "@/components/ui/spinner";
 import axios from "axios";
-import type { AreaForm, AreaWithProjects } from "@/types/AreaTypes/area.types";
+import type { AreaForm, AreaWithProjects } from "@/types/area.types";
 import { useAreaStore } from "@/stores/areaStore";
 import { useNavigate } from "react-router-dom";
 
