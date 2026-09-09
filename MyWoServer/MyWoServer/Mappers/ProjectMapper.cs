@@ -5,7 +5,7 @@ namespace MyWoServer.Mappers;
 
 public static class ProjectMapper
 {
-    public static Project ToProject(this CreateProjectDto createDto)
+    public static Project ToProject(this CreateProjectDto createDto, Guid areaId)
     {
         return new Project
         {
@@ -13,7 +13,7 @@ public static class ProjectMapper
             Description = createDto.Description,
             StartDate = createDto.StartDate,
             DueDate = createDto.DueDate,
-            AreaId = createDto.AreaId,
+            AreaId = areaId,
         };
     }
 

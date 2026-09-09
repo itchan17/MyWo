@@ -6,7 +6,7 @@ namespace MyWoServer.Services.ProjectServices
     {
         Task<IEnumerable<ProjectDto>> GetAll();
         Task<ProjectDto> GetById(Guid id);
-        Task<ProjectDto> Create(CreateProjectDto createDto);
+        Task<ProjectDto> Create(Guid areaId, CreateProjectDto createDto);
         Task<ProjectDto> Update(Guid id, UpdateProjectDto updateDto);
         Task Delete(Guid id);
     }

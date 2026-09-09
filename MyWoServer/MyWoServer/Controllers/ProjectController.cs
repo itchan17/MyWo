@@ -8,7 +8,7 @@ using MyWoServer.Shared;
 namespace MyWoServer.Controllers
 {
     [ApiController]
-    [Route("api/projects")]
+    [Route("api/")]
     public class ProjectController : ControllerBase
     {
         private readonly IProjectService _projectService;
@@ -20,7 +20,7 @@ namespace MyWoServer.Controllers
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ProjectDto>>> GetAll()
-        { 
+        {
             var projects = await _projectService.GetAll();
             return Ok(new ApiResponse<IEnumerable<ProjectDto>>(true, "Projects retrieved successfully", projects));
         }
@@ -50,12 +50,12 @@ namespace MyWoServer.Controllers
             }
         }
 
-        [HttpPost]
-        public async Task<ActionResult<ProjectDto>> Create([FromBody]CreateProjectDto projectDto)
+        [HttpPost("/areas/{areaId}/projects")]
+        public async Task<ActionResult<ProjectDto>> Create(Guid areaId, [FromBody]CreateProjectDto projectDto)
         {
             try
             {
-                var project = await _projectService.Create(projectDto);
+                var project = await _projectService.Create(areaId, projectDto);
 
                 return Ok(new ApiResponse<ProjectDto>(true, "Project created successfully", project));
             }

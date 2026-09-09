@@ -61,12 +61,14 @@ public class AreaService : IAreaService
 
     public async Task<AreaResponseDto> GetById(Guid id)
     {
-        var area = await _appDbContext.Areas.FirstOrDefaultAsync(x => x.Id == id);
+        var area = await _appDbContext.Areas
+                .Include(area => area.Projects)
+                .FirstOrDefaultAsync(x => x.Id == id);
 
         if(area is null)
             throw new KeyNotFoundException($"Area with ID '{id}' was not found.");
 
-        return area.ToAreaResponseDto();
+        return area.ToAreaResponseDto(true);
     }
 
     public async Task<AreaResponseDto> Create(CreateAreaDto areaDto)

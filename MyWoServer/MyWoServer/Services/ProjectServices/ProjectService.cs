@@ -34,14 +34,14 @@ public class ProjectService : IProjectService
     }
 
 
-    public async Task<ProjectDto> Create(CreateProjectDto createDto)
+    public async Task<ProjectDto> Create(Guid areaId, CreateProjectDto createDto)
     {
-        var areaExist = await _appDbContext.Areas.AnyAsync(a => a.Id == createDto.AreaId);
+        var areaExist = await _appDbContext.Areas.AnyAsync(a => a.Id == areaId);
 
         if (!areaExist)
-            throw new KeyNotFoundException($"Area with ID '{createDto.AreaId}' was not found.");
+            throw new KeyNotFoundException($"Area with ID '{areaId}' was not found.");
 
-        var project = createDto.ToProject();
+        var project = createDto.ToProject(areaId);
 
         _appDbContext.Projects.Add(project);
         
