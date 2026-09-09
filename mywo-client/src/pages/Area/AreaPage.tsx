@@ -12,9 +12,19 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from "@/components/ui/popover";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import ProjectCard from "./ProjectCard";
 import AreaStatCard from "./AreaStatCard";
 import AreaForm from "./AreaForm";
+import { useNavigate } from "react-router-dom";
 
 export default function AreaPage() {
   const { id: areaId } = useParams();
@@ -22,6 +32,10 @@ export default function AreaPage() {
   const [area, setArea] = useState<AreaWithProjects | null>();
   const [openForm, setOpenForm] = useState(false);
   const [openPopover, setOpenPopover] = useState(false);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [isDeleteLoading, setIsDeleteLoading] = useState(false);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const getArea = async () => {
@@ -38,6 +52,19 @@ export default function AreaPage() {
 
     getArea();
   }, [areaId]);
+
+  const handleDeleteArea = async (id: string) => {
+    setIsDeleteLoading(true);
+    try {
+      await api.delete(`/areas/${id}`);
+      setOpenDeleteDialog(false);
+      navigate("/workspace");
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsDeleteLoading(false);
+    }
+  };
 
   return (
     <Layout>
@@ -106,7 +133,7 @@ export default function AreaPage() {
                       className="w-full justify-start text-destructive hover:text-destructive"
                       onClick={() => {
                         setOpenPopover(false);
-                        // delete logic
+                        setOpenDeleteDialog(true);
                       }}
                     >
                       Delete area
@@ -114,6 +141,41 @@ export default function AreaPage() {
                   </div>
                 </PopoverContent>
               </Popover>
+
+              {/* Confirm Delete Dialog */}
+              <Dialog
+                open={openDeleteDialog}
+                onOpenChange={setOpenDeleteDialog}
+              >
+                <DialogContent className="sm:max-w-md">
+                  <DialogHeader>
+                    <DialogTitle>Delete Area?</DialogTitle>
+                    <DialogDescription>
+                      Are you sure you want to delete this area? This action
+                      cannot be undone.
+                    </DialogDescription>
+                  </DialogHeader>
+
+                  <DialogFooter>
+                    <DialogClose
+                      render={
+                        <Button type="button" variant="outline">
+                          Cancel
+                        </Button>
+                      }
+                    />
+
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      disabled={isDeleteLoading}
+                      onClick={() => handleDeleteArea(area.id)}
+                    >
+                      {isDeleteLoading ? <Spinner /> : "Delete"}
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
 
               {openForm && (
                 <AreaForm
